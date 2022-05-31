@@ -12,23 +12,11 @@ def input_error(func):
     return inner
 
 
-def greeting():
+def greeting(*args):
     return "How can I help you?"
 
 
-def to_exit():
-    return "Good bye"
-
-
-def to_exit1():
-    return "Good bye"
-
-
-def to_exit2():
-    return "Good bye"
-
-
-def to_exit3():
+def to_exit(*args):
     return "Good bye"
 
 
@@ -37,13 +25,13 @@ data = {}
 
 @input_error
 def add_contact(*args):
-    data.update({args[0]: args[1]})
+    data.update({str(args[0]): int(args[1])})
     return f'Contact {args[0].title()} has added successfully'
 
 
 @input_error
 def change_number(*args):
-    data[args[0]] = args[1]
+    data[args[0]] = int(args[1])
     return f'Phone for contact {args[0].title()} has changed successfully'
 
 
@@ -58,43 +46,34 @@ def print_phone(*args):
     return data[args[0]]
 
 
-def show_all():
+def show_all(*args):
     return "\n".join([f"{k.title()}: {v}" for k, v in data.items()]) if len(data) > 0 else 'Contacts are empty'
 
 
 all_commands = {
-    greeting: "hello",
-    add_contact: "add",
-    change_number: "change",
-    print_phone: "phone",
-    show_all: "show all",
-    to_exit: "good bye",
-    to_exit1: "close",
-    to_exit2: "exit",
-    to_exit3: ".",
-    del_number: "del"
+    greeting: ["hello", "hi"],
+    add_contact: ["add", "new"],
+    change_number: ["change", ],
+    print_phone: ["phone", "number"],
+    show_all: ["show all", "show"],
+    to_exit: ["good bye", "close", "exit", ".", "bye"],
+    del_number: ["del", "delete"]
 }
 
 
-def command_parser(user_input_lower):
-    commands_value = ""
-    command = ""
+def command_parser(user_input: str):
     for key, value in all_commands.items():
-        if user_input_lower.startswith(value):
-            command = key
-            commands_value = user_input_lower.replace(value, "").split()
-        else:
-            continue
-    return command, commands_value
+        for i in value:
+            if user_input.lower().startswith(i.lower()):
+                return key, user_input[len(i):].strip().split()
 
 
 def main():
     while True:
-        user_input = input(">>> ").title()
-        user_input_lower = user_input.lower()
-        command, parser_data = command_parser(user_input_lower)
+        user_input = input(">>> ")
+        command, parser_data = command_parser(user_input)
         print(command(*parser_data))
-        if command == to_exit or command == to_exit1 or command == to_exit2 or command == to_exit3:
+        if command is to_exit:
             break
 
 
